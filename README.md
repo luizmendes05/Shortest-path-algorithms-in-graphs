@@ -4,7 +4,7 @@ A simple code to find shortest paths in graphs using some algorithms.
 Graph Algorithms Implementation
 This repository contains a C program that allows the user to work with graph representations and execute various graph algorithms through a command-line interface. The supported algorithms include Floyd-Warshall, Bellman-Ford, and Dijkstra's algorithm. The program allows for initialization and manipulation of an adjacency matrix representation of a graph.
 
-#Features
+# Features
 
 Initialize Matrix: Set the order of the adjacency matrix.
 Print Matrix: Display the current state of the adjacency matrix.
