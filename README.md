@@ -44,7 +44,3 @@ The program supports detecting and handling negative cycles using the Bellman-Fo
 Ensure that the input for the matrix dimensions does not exceed 100.
 The adjacency matrix is initialized with zeroes, and diagonal elements (self-loops) are ignored during insertion.
 For convenience, the predefined matrix values can be used to quickly test the graph algorithms.
-
-#Author
-
-This program was developed to demonstrate the implementation and usage of fundamental graph algorithms in C.
