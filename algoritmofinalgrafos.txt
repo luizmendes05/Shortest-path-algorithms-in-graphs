@@ -1,0 +1,364 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <stdbool.h>
+#include <time.h>
+
+int ordem;
+int matriz[101][101];
+
+int Menu() {
+    system("cls");
+    printf("\n======   MENU DE CONTROLE    =================");
+    printf("\n= 1: Inicializar a Matriz                    =");
+    printf("\n= 2: Imprimir a Matriz                       =");
+    printf("\n= 3: Inserir valor na Matriz                 =");
+    printf("\n= 4: Inserir valor negativo na Matriz        =");
+    printf("\n= 5: Inserir valor na Matriz Predefinido     =");
+    printf("\n= 6: Percorrer a Matriz                      =");
+    printf("\n= 7: Algoritmo de Floyd                      =");
+    printf("\n= 8: Algoritmo de Bellman-Ford               =");
+    printf("\n= 9: Algoritmo de Dijkstra                   =");
+    printf("\n= 10: Sair do programa                       =");
+    printf("\n==============================================");
+    printf("\nDigite a opcao desejada: ");
+    int resposta;
+    scanf("%i", &resposta);
+    return resposta;
+}
+
+void LimparMatriz() {
+    for (int l = 1; l <= ordem; l++) 
+        for (int c = 1; c <= ordem; c++) 
+            matriz[l][c] = 0;
+}
+
+void ImprimirMatriz(){
+    printf("\n");
+    for (int l = 1; l <= ordem; l++) {
+        for (int c = 1; c <= ordem; c++) {
+            printf("%3i ", matriz[l][c]);
+        }
+        printf("\n");
+    }
+    printf("\nPressione uma tecla para prosseguir...");
+    getchar();
+    getchar();
+}
+
+void GravarValor(int A, int B, int C) {
+    if (A >= 1 && A <= ordem && B >= 1 && B <= ordem) { 
+        if (A == B) {
+            printf("\nA diagonal principal representa os laços de um vértice para si mesmo. O valor será ignorado.\n");
+            return;
+        }
+        if (matriz[A][B] != 0) {
+            printf("\nJá existe um valor na posiçao [%i,%i] da Matriz: %i\n", A, B, matriz[A][B]);
+            printf("Deseja substituí-lo? (S/N): ");
+            char escolha;
+            scanf(" %c", &escolha);
+            if (escolha != 'S' && escolha != 's') {
+                printf("\nOperação cancelada.\n");
+                return;
+            }
+        }
+        matriz[A][B] = C;
+        printf("\nO valor %i foi gravado na posiçao [%i,%i] da Matriz", C, A, B);
+    } else {
+        printf("\nAs coordenadas informadas estão fora dos limites da matriz.");
+    }
+    printf("\nPressione Enter para prosseguir...");
+    while (getchar() != '\n');
+    getchar();
+}
+
+void GravarValorNegativo(int A, int B, int C) {
+    if (A >= 1 && A <= ordem && B >= 1 && B <= ordem) {
+        if (A == B) {
+            printf("\nA diagonal principal representa os laços de um vértice para si mesmo. O valor será ignorado.\n");
+            return;
+        }
+        if (matriz[A][B] != 0) {
+            printf("\nJá existe um valor na posiçao [%i,%i] da Matriz: %i\n", A, B, matriz[A][B]);
+            printf("Deseja substituí-lo? (S/N): ");
+            char escolha;
+            scanf(" %c", &escolha);
+            if (escolha != 'S' && escolha != 's') {
+                printf("\nOperação cancelada.\n");
+                return;
+            }
+        }
+        matriz[A][B] = C;
+        printf("\nO valor %i foi gravado na posiçao [%i,%i] da Matriz", C, A, B);
+    } else {
+        printf("\nAs coordenadas informadas estão fora dos limites da matriz.");
+    }
+    printf("\nPressione Enter para prosseguir...");
+    while (getchar() != '\n');
+    getchar();
+}
+
+void PreencherMatrizPredefinida() {
+    LimparMatriz(); 
+    matriz[1][2]=1;
+    matriz[1][5]=1;
+    matriz[2][3]=1;
+    matriz[2][4]=2;
+    matriz[3][4]=4;
+    matriz[3][5]=2;
+    matriz[4][1]=3;
+    matriz[5][1]=2;
+    matriz[5][4]=1;
+}
+
+void Percorrer(int origem, int destino, int total, int caminho[], int passo, int visitado[]) {
+    if (origem < 1 || origem > ordem || destino < 1 || destino > ordem) { 
+        printf("\nOrigem ou Destino fora dos limites da matriz.");
+        return;
+    }
+    
+    caminho[passo] = origem;
+    passo++;
+    visitado[origem] = 1;
+
+    if (origem == destino) {
+        printf("\nCaminho encontrado com sucesso! Peso total: %i\n", total);
+        for (int i = 0; i < passo; i++) {
+            printf("%i ", caminho[i]);
+            if (i < passo - 1) printf("-> ");
+        }
+        printf("\n");
+        visitado[origem] = 0;
+        return;
+    }
+
+    for (int c = 1; c <= ordem; c++) {
+        if (matriz[origem][c] != 0 && !visitado[c]) { 
+            int pesoAresta = matriz[origem][c];
+            Percorrer(c, destino, total + pesoAresta, caminho, passo, visitado);
+        }
+    }
+
+    visitado[origem] = 0;
+}
+
+void Floyd() {
+        for (int i = 1; i <= ordem; i++) {
+        for (int j = 1; j <= ordem; j++) {
+            if (matriz[i][j] < 0) {
+                printf("O grafo contém um ciclo negativo. O algoritmo de Floyd não pode ser aplicado.\n");
+                return;
+            }
+        }
+    }
+    int distancia[101][101];
+
+    for (int i = 1; i <= ordem; i++) {
+        for (int j = 1; j <= ordem; j++) {
+            if (matriz[i][j] == 0 && i != j) {
+                distancia[i][j] = INT_MAX;
+            } else {
+                distancia[i][j] = matriz[i][j];
+            }
+        }
+    }
+
+    for (int k = 1; k <= ordem; k++) {
+        for (int i = 1; i <= ordem; i++) {
+            for (int j = 1; j <= ordem; j++) {
+                if (distancia[i][k] != INT_MAX && distancia[k][j] != INT_MAX &&
+                    distancia[i][k] + distancia[k][j] < distancia[i][j]) {
+                    distancia[i][j] = distancia[i][k] + distancia[k][j];
+                }
+            }
+        }
+    }
+
+    printf("Matriz de distância após o algoritmo de Floyd:\n");
+    printf("\n");
+    for (int i = 1; i <= ordem; i++) {
+        for (int j = 1; j <= ordem; j++) {
+            if (distancia[i][j] == INT_MAX) {
+                printf("INF\t");
+            } else {
+                printf("%d\t", distancia[i][j]);
+            }
+
+        }
+        printf("\n");
+    }
+}
+
+void BellmanFord(int origem) {
+    int distancia[101];
+    for (int i = 1; i <= ordem; i++) {
+        distancia[i] = INT_MAX;
+    }
+    distancia[origem] = 0;
+
+    for (int i = 1; i <= ordem - 1; i++) {
+        for (int u = 1; u <= ordem; u++) {
+            for (int v = 1; v <= ordem; v++) {
+                if (matriz[u][v] != 0 && distancia[u] != INT_MAX && distancia[u] + matriz[u][v] < distancia[v]) {
+                    distancia[v] = distancia[u] + matriz[u][v];
+                }
+            }
+        }
+    }
+
+    for (int u = 1; u <= ordem; u++) {
+        for (int v = 1; v <= ordem; v++) {
+            if (matriz[u][v] != 0 && distancia[u] != INT_MAX && distancia[u] + matriz[u][v] < distancia[v]) {
+                printf("O grafo contém um ciclo negativo.\n");
+                return;
+            }
+        }
+    }
+
+    printf("Distância mínima do vértice %d:\n", origem);
+    for (int i = 1; i <= ordem; i++) {
+        if (distancia[i] == INT_MAX) {
+            printf("Vértice %d: INF\n", i);
+        } else {
+            printf("Vértice %d: %d\n", i, distancia[i]);
+        }
+    }
+}
+
+int minDistance(int dist[], bool sptSet[]) {
+    int min = INT_MAX, min_index;
+
+    for (int v = 1; v <= ordem; v++)
+        if (sptSet[v] == false && dist[v] <= min)
+            min = dist[v], min_index = v;
+
+    return min_index;
+}
+
+void Dijkstra(int origem) {
+        for (int i = 1; i <= ordem; i++) {
+        for (int j = 1; j <= ordem; j++) {
+            if (matriz[i][j] < 0) {
+                printf("O grafo contém uma aresta negativa. O algoritmo de Dijkstra não pode ser aplicado.\n");
+                return;
+            }
+        }
+    }
+    int dist[101];
+    bool sptSet[101];
+
+    for (int i = 1; i <= ordem; i++) {
+        dist[i] = INT_MAX;
+        sptSet[i] = false;
+    }
+
+    dist[origem] = 0;
+
+    for (int count = 1; count <= ordem - 1; count++) {
+        int u = minDistance(dist, sptSet);
+        sptSet[u] = true;
+
+        for (int v = 1; v <= ordem; v++)
+            if (!sptSet[v] && matriz[u][v] && dist[u] != INT_MAX && dist[u] + matriz[u][v] < dist[v])
+                dist[v] = dist[u] + matriz[u][v];
+    }
+
+    printf("Distância mínima do vértice %d:\n", origem);
+    for (int i = 1; i <= ordem; i++) {
+        if (dist[i] == INT_MAX) {
+            printf("Vértice %d: INF\n", i);
+        } else {
+            printf("Vértice %d: %d\n", i, dist[i]);
+        }
+    }
+}
+
+int main() {
+    srand(time(NULL));
+    int resposta;
+    int a, b, c;
+    int origem, destino;
+    int caminho[101];
+    int visitado[101] = {0};
+    int passo;
+
+    do {
+        resposta = Menu();
+        switch (resposta) {
+            case 1:
+                printf("\nDigite a ordem da Matriz: ");
+                scanf("%i", &ordem);
+                if (ordem > 100) {
+                    printf("\nOrdem da matriz maior que o permitido (100).");
+                    printf("\nPressione Enter para prosseguir...");
+                    getchar();
+                    getchar();
+                    break;
+                }
+                LimparMatriz();
+                break;
+
+            case 2:
+                ImprimirMatriz();
+                break;
+
+            case 3:
+                printf("\nInforme a posição da linha: ");
+                scanf("%i", &a);
+                printf("\nInforme a posição da coluna: ");
+                scanf("%i", &b);
+                printf("\nInforme o valor a ser inserido na posiçao [%i,%i]: ", a, b);
+                scanf("%i", &c);
+                GravarValor(a, b, c);
+                break;
+            
+            case 4:
+                printf("\nInforme a posição da linha: ");
+                scanf("%i", &a);
+                printf("\nInforme a posição da coluna: ");
+                scanf("%i", &b);
+                printf("\nInforme o valor negativo a ser inserido na posiçao [%i,%i]: ", a, b);
+                scanf("%i", &c);
+                GravarValorNegativo(a, b, c);
+                break;
+
+            case 5:
+                PreencherMatrizPredefinida();
+                break;
+
+            case 6:
+                printf("\nInforme as coordenadas de origem e destino...");
+                printf("\nInforme o vertice de origem: ");
+                scanf("%i", &origem);
+                printf("\nInforme o vertice de destino: ");
+                scanf("%i", &destino);
+                passo = 0;
+                Percorrer(origem, destino, 0, caminho, passo, visitado);
+                break;
+
+            case 7:
+                Floyd();
+                break;
+
+           case 8:
+                printf("\nInforme o vértice de origem para Bellman-Ford: ");
+                scanf("%i", &origem);
+                BellmanFord(origem);
+                break;
+            
+            case 9:
+                printf("\nInforme o vértice de origem para Dijkstra: ");
+                scanf("%i", &origem);
+                Dijkstra(origem);
+                break;
+
+            case 10:
+                printf("\nSaindo do programa...");
+                break;
+
+            default:
+                printf("\nOpção inválida.");
+        }
+    } while (resposta != 10);
+    return 0;
+}
