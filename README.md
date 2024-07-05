@@ -20,7 +20,8 @@ Exit Program: Terminate the program.
 # Usage
 Upon running the program, the user is presented with a menu to choose from the above-listed features. The adjacency matrix can be manipulated and analyzed using the provided options.
 
-Example
+# Example
+
 To compile and run the program, use a C compiler such as gcc:
 
 sh
